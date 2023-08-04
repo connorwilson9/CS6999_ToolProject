@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name ="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+
+	<style>
+		.checkbox {
+		    width: 2em;
+		    height: 2em;
+		    background-color: red;
+		    border-radius: 50%;
+		    vertical-align: middle;
+		    border: 1px solid #ddd;
+		    appearance: none;
+		    -webkit-appearance: none;
+		    outline: none;
+		    cursor: pointer;
+		}
+
+		.checkbox:checked {
+		    background-color: green;
+		}
+
+		.table-container-labs{
+			text-align: center;
+		}
+		
+		.selectbox {
+		    width: 1.33em;
+		    height: 1.33em;
+		    background-color: #BBBBBB;
+		    border-radius: 50%;
+		    vertical-align: middle;
+		    horizonal-align: middle;
+		    border: 1px solid #000;
+		    appearance: none;
+		    -webkit-appearance: none;
+		    outline: none;
+		    cursor: pointer;
+		}
+
+		.selectbox:checked {
+		    background-color: #684BB5;
+		}
+
+		.label {
+			font-family: Arial;
+			font-size: 11pt;
+		}
+		.table {
+ 			table-layout: fixed;
+ 			border-collapse: collapse;
+			border: 3px solid;
+			text-align: left;
+		}
+		table td {
+	        width: 225px;
+	        word-wrap: break-word;
+	      }
+
+	    .form-control{
+	    	background-color: #684BB5; 
+			border: none;
+			color: white;
+			padding: 10px 40px;
+			text-align: center;
+			font-family: Arial;
+			font-size: 16px;
+			border-radius: 7px;
+	    }
+	    .button-div{
+	    	text-align: center;  
+	    }
+
+	</style>
+</head>
+<body style="background-color:#E2E2FA;">
+	<form id="form-container" class="container" method="post" action="/">
+		<div class="form-group">
+			<div id="table-container-labs" name="table"></div>
+			<div class="button-div">
+				<br>
+				<button class="form-control" name="title" onclick="saveForm()">Submit</button>
+			</div>
+		</div>
+	</form>
+	
+
+	<script>
+		function saveForm(){
+			var form=document.getElementById('form-container');//retrieve the form as a DOM element
+
+		    var studentID = document.createElement('input');
+		    studentID.setAttribute('name', 'studentID');
+		    studentID.setAttribute('value', document.querySelector('input[name="studentsRadio"]:checked').id);
+		    form.appendChild(studentID);
+
+			var labID = document.createElement('input');
+		    labID.setAttribute('name', 'labID');
+		    labID.setAttribute('value', document.querySelector('input[name="labsRadio"]:checked').id - 1);
+		    form.appendChild(labID);
+
+		    var taskID = document.createElement('input');
+		    taskID.setAttribute('name', 'taskID');
+		    taskID.setAttribute('value', document.querySelector('input[name="tasksRadio"]:checked').id % 100 - 1);
+		    form.appendChild(taskID);
+
+
+		    var pointID = document.createElement('input');
+		    var allSelected = document.querySelectorAll('input[name="pointsRadio"]:checked');
+		    var toSend = [];
+		    for(let i = 0; i < allSelected.length; i++){
+		    	toSend[i] = (allSelected[i].id-1)%100;
+		    }
+		    pointID.setAttribute('name', 'pointID');
+		    pointID.setAttribute('value', toSend);
+		    form.appendChild(pointID);
+
+
+		    form.submit();//send with added input
+		}
+		function savePointData(elem){
+
+		}
+
+		function prepPointData(elem){
+			//Students
+
+        	let formPoints = document.getElementById('pointsForm');
+        	if(formPoints != null){
+        		formPoints.remove();
+        		let cellRemove = document.getElementById('pointsCol');
+        		cellRemove.remove();
+        	}
+			cell = document.getElementById('MainRow').insertCell();
+			cell.setAttribute("id", "pointsCol");
+
+			formPoints = document.createElement('form');
+			formPoints.setAttribute("id", "pointsForm");
+			
+
+			let data = <%-JSON.stringify(students)%>;
+
+        	var taskSelected = document.querySelector('input[name="tasksRadio"]:checked').id % 100 - 1;
+        	var labSelected = document.querySelector('input[name="labsRadio"]:checked').id - 1;
+        	var studentSelected = document.querySelector('input[name="studentsRadio"]:checked').id - 1234567;
+
+			for(let i = 0; i < data[0].labs[labSelected].tasks[taskSelected].points.length; i++){
+				let button = document.createElement('input');
+				button.setAttribute('id', data[0].labs[labSelected].tasks[taskSelected].points[i].id);
+				button.setAttribute('type', 'checkbox'); 
+				button.setAttribute('class', 'checkbox'); 
+				button.setAttribute('onclick', "savePointData(this)"); 
+				
+				if(data[studentSelected].labs[labSelected].tasks[taskSelected].points[i].completed){
+					button.setAttribute("checked", "true");
+				}
+				
+
+				
+
+
+				button.setAttribute("name", "pointsRadio");
+				var lbl = document.createElement("label");
+
+
+				var text1 = document.createElement("text");
+				text1.innerHTML = (data[0].labs[labSelected].tasks[taskSelected].points[i].title);
+				text1.setAttribute("class", "label");
+
+				var text2 = document.createElement("text");
+				text2.innerHTML = (" ┕ - - - " + data[0].labs[labSelected].tasks[taskSelected].points[i].desc);
+				text2.setAttribute("class", "label");
+
+				lbl.appendChild(text1);
+				lbl.appendChild(document.createElement('br'));
+				lbl.appendChild(text2);
+
+				
+
+				formPoints.appendChild(button);
+				formPoints.appendChild(lbl);
+				formPoints.appendChild(document.createElement("br"));
+				formPoints.appendChild(document.createElement("br"));
+
+
+
+			}
+			
+			cell.appendChild(formPoints);
+		}
+
+		function prepStudentData(elem){
+        	//Students
+
+        	let formStudents = document.getElementById('studentsForm');
+        	if(formStudents != null){
+        		formStudents.remove();
+        		let cellRemove = document.getElementById('studentsCol');
+        		cellRemove.remove();
+        		let formPoints = document.getElementById('pointsForm');
+	        	if(formPoints != null){
+	        		formPoints.remove();
+	        		let cellRemove = document.getElementById('pointsCol');
+	        		cellRemove.remove();
+	        	}
+        	}
+			cell = document.getElementById('MainRow').insertCell();
+			cell.setAttribute("id", "studentsCol");
+			let defaultSelection = -1;
+
+			formStudents = document.createElement('form');
+			formStudents.setAttribute("id", "studentsForm");
+			let data = <%-JSON.stringify(students)%>;
+
+			for(let i = 0; i < data.length; i++){
+				let button = document.createElement('input');
+				button.setAttribute('id', data[i].id);
+				button.setAttribute('type', 'radio'); 
+				button.setAttribute('class', 'selectbox'); 
+				button.setAttribute('onclick', "prepPointData(this)"); 
+
+
+				button.setAttribute("name", "studentsRadio");
+				var lbl = document.createElement("label");
+				var text = document.createElement("text");
+
+
+				var taskSelected = document.querySelector('input[name="tasksRadio"]:checked').id % 100 - 1;
+        		var labSelected = document.querySelector('input[name="labsRadio"]:checked').id - 1;
+
+        		let totalPoints = 0;
+        		let totalScore = 0;
+
+        		for(let j = 0; j < data[i].labs[labSelected].tasks[taskSelected].points.length; j++){
+        			totalPoints += 1
+        			if(data[i].labs[labSelected].tasks[taskSelected].points[j].completed){
+        				totalScore += 1
+        			}
+
+        		}
+        		
+				text.innerHTML = (data[i].name + ":  " + totalScore + "/"+ totalPoints);
+				text.setAttribute("class", "label");
+
+				lbl.appendChild(text);
+
+				if(i == <%=currentStudent%>){
+					button.setAttribute("checked", "true");
+					defaultSelection = i;
+				}
+
+				formStudents.appendChild(button);
+				formStudents.appendChild(lbl);
+				formStudents.appendChild(document.createElement("br"));
+				formStudents.appendChild(document.createElement("br"));
+
+			}
+			cell.appendChild(formStudents);
+
+			if(defaultSelection > -1){
+				prepPointData(document.getElementById(data[defaultSelection].id));
+			}
+			
+	    }
+
+		function prepTaskData(elem){
+        	//Tasks
+
+        	let formTasks = document.getElementById('tasksForm');
+        	if(formTasks != null){
+        		formTasks.remove();
+        		let cellRemove = document.getElementById('tasksCol');
+        		cellRemove.remove();
+        		let formStudents = document.getElementById('studentsForm');
+	        	if(formStudents != null){
+	        		formStudents.remove();
+	        		let cellRemove = document.getElementById('studentsCol');
+	        		cellRemove.remove();
+	        		let formPoints = document.getElementById('pointsForm');
+		        	if(formPoints != null){
+		        		formPoints.remove();
+		        		let cellRemove = document.getElementById('pointsCol');
+		        		cellRemove.remove();
+		        	}
+	        	}
+        	}
+			cell = document.getElementById('MainRow').insertCell();
+			cell.setAttribute("id", "tasksCol");
+
+			formTasks = document.createElement('form');
+			formTasks.setAttribute("id", "tasksForm");
+			let data = <%-JSON.stringify(students)%>;
+			let defaultSelection = -1;
+
+
+
+			for(let i = 0; i < data[0].labs[elem.id - 1].tasks.length; i++){
+				let button = document.createElement('input');
+				button.setAttribute('id', data[0].labs[elem.id-1].tasks[i].id);
+				button.setAttribute('type', 'radio'); 
+				button.setAttribute('class', 'selectbox'); 
+				button.setAttribute('onclick', "prepStudentData(this)"); 
+
+
+				button.setAttribute("name", "tasksRadio");
+				var lbl = document.createElement("label");
+
+				var text = document.createElement("text");
+				text.innerHTML = "Lab " + "Task #"+(data[0].labs[elem.id-1].tasks[i].id%10);
+				text.setAttribute("class", "label");
+				lbl.appendChild(text);
+
+				if(i == <%=currentTask%>){
+					button.setAttribute("checked", "true");
+					defaultSelection = i;
+				}
+				
+
+				formTasks.appendChild(button);
+				formTasks.appendChild(lbl);
+				formTasks.appendChild(document.createElement("br"));
+
+
+			}
+			cell.appendChild(formTasks);
+
+			if(defaultSelection > -1){
+
+				prepStudentData(document.getElementById(data[0].labs[elem.id-1].tasks[defaultSelection].id));
+			}
+	    }
+
+	</script>
+	
+	<script>
+		const table = document.createElement('table');
+		table.setAttribute("class", "table");
+		let data = <%-JSON.stringify(students)%>;
+		
+		let thead = table.createTHead();
+
+		let row = thead.insertRow();
+		row.setAttribute("id", "MainRow");
+		row.setAttribute("class", "tr");
+		let cell = row.insertCell();
+		let defaultSelection = -1;
+
+
+		let formLab = document.createElement('form');
+
+		for(let i = 0; i < data[0].labs.length; i++){
+			let button = document.createElement('input');
+			button.setAttribute('id', data[0].labs[i].id);
+			button.setAttribute('type', 'radio'); 
+			button.setAttribute('class', 'selectbox'); 
+			button.setAttribute('onclick', "prepTaskData(this)"); 
+			button.setAttribute("value", ("Lab " + data[0].labs[i].id + " (" +data[0].labs[i].language+ ")"));
+			button.setAttribute("name", "labsRadio");
+			var lbl = document.createElement("label");
+			
+			var text = document.createElement("text");
+			text.innerHTML = "Lab " + data[0].labs[i].id + " (" +data[0].labs[i].language+ ")";
+			text.setAttribute("class", "label");
+
+			//document.createTextNode(("Lab " + data[0].labs[i].id + " (" +data[0].labs[i].language+ ")"));
+			lbl.appendChild(text);
+
+
+			if(i == <%=currentLab%>){
+				button.setAttribute("checked", "true");
+				defaultSelection = i;
+
+			}
+
+
+			formLab.appendChild(button);
+			formLab.appendChild(lbl);
+			formLab.appendChild(document.createElement("br"));
+
+		}
+		cell.appendChild(formLab);
+		table.appendChild(row);
+
+		const tableContainer = document.getElementById('table-container-labs');
+		tableContainer.appendChild(table);
+
+		if(defaultSelection > -1){
+
+			prepTaskData(document.getElementById(data[0].labs[defaultSelection].id));
+		}
+
+
+	</script>
+
+
+
+</body>
+</html>
