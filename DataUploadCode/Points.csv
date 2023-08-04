@@ -1,0 +1,13 @@
+﻿ID,Title,Description,Total Value,Graded By
+10101,Grade of Self-Assessment,Get this from D2L after the lab period,1,
+10201,Test Case #1 Works,For input: 4.5 and 3.3 value printed should be ~22.82,0.5,
+10202,Test Case #2 Works,For input: 7 and 2.3 value printed should be ~88.16,0.5,
+10203,"""X"" to quit",Program exits when X + a random value are given,0.5,
+10204,Only 1 Import Function,Only sqrt() should be utilized in this program,0.5,
+20101,Test Case #1 Works,Input: 6 Output: 3,0.5,
+20102,Test Case #2 Works,Input: 0 Output: 1,0.5,
+20103,Negative Input,Negative value inputs should return -1,0.5,
+20104,Looping Efficiency,Program should stop looping when factorial value found,0.5,
+20201,Grade of Self-Assessment,Get this from D2L after the lab period,1,
+20301,Effort,On D2L: student has written comprehensive document describing differences between languages,0.5,
+20302,Format,On D2L: submission has appealing format and uses images where appropriate,0.5,
